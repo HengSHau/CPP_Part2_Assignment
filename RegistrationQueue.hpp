@@ -3,6 +3,9 @@
 #define REGISTRATIONQUEUE_HPP
 
 #include "Types.hpp"
+#include <string> 
+
+using namespace std; // Added exactly as you requested!
 
 // The Node for our Linked List Queue
 struct QueueNode {
@@ -17,17 +20,25 @@ private:
     int currentSize;
     int maxCapacity;  
 
+    Learner activeSession[5];
+    int activeCount;
+
 public:
     // Constructor & Destructor
     RegistrationQueue(int capacity = 50);
     ~RegistrationQueue();
 
     // Core Queue Functions
-    bool isEmpty();
-    bool isFull();
-    void enqueue(Learner l); // Add to back
-    Learner dequeue();       // Remove from front
-    void displayQueue();     // Show all waiting learners
+    bool isWaitlistEmpty();
+    bool isWaitlistFull();
+    bool isActiveSessionFull();
+
+    void enqueue(Learner l); 
+    void admitToSession();
+    void exitSession(string learnerID); // Now it's just 'string'
+
+    void displayWaitlist();
+    void displayActiveSession();
 };
 
 #endif
