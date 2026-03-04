@@ -90,3 +90,32 @@ void ActivityStack::displayStack() {
     }
     cout << "-------------------------------------------------\n";
 }
+
+void ActivityStack::selectionFlow(int choice) {   
+    if (choice == 1) {
+        string topic, diff;
+        float score;
+        cout << "Enter Topic: "; cin >> topic;
+        cout << "Enter Difficulty: "; cin >> diff;
+        cout << "Enter Score: "; cin >> score;
+
+        // 生成 ID 并直接 push 到当前对象 (this)
+        Activity newAct = {"ACT_" + to_string(rand() % 100), topic, diff, score};
+        this->push(newAct); // 使用 this-> 或者直接调用 push [cite: 30]
+
+    } else if (choice == 2) {
+        // 直接在当前对象上操作 pop [cite: 31]
+        Activity prev = this->pop(); 
+        if (prev.topic != "None") {
+            cout << "Backtracking from " << prev.topic << "..." << endl;
+        }
+
+    } else if (choice == 3) {
+        // 展示当前对象的栈状态 [cite: 39]
+        this->displayStack(); 
+
+    } else if (choice == 4) {
+        cout << "Ending session. Data sent to logging system." << endl;
+        // 这里应调用 Task 3 的接口 [cite: 33]
+    }
+}

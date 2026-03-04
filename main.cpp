@@ -3,6 +3,7 @@
 #include <sstream>
 #include "Types.hpp"
 #include "RegistrationQueue.hpp"
+#include "ActivityStack.hpp"
 
 
 using namespace std;
@@ -37,6 +38,7 @@ int main() {
     cout << "=================================================\n\n";
 
     RegistrationQueue systemQueue(100); // Set waitlist max capacity to 50
+    ActivityStack activityStack;
 
     loadLearnerFromCSV("Learner.csv",systemQueue);
     
@@ -57,6 +59,33 @@ int main() {
     // 4. Show the current state of both lists
     systemQueue.displayActiveSession(); // Should have 5 students
     systemQueue.displayWaitlist();      // Should have 2 left (David and Sarah)
+
+    int choice;
+    do{
+        cout << endl;
+        cout << "=================================================\n";
+        cout << "   PLAPS Prototype - Task 2 Full Test            \n";
+        cout << "=================================================\n";
+        cout << "1. Next Activity\n2. Go Back (Undo)\n3. View Current Progress\n4. Exit Session\nChoice: ";
+        
+        if (!(cin >> choice)) { // 检查输入是否为数字 
+            cout << "[Error] Please enter a valid numeric value.\n";
+            cin.clear(); // 清除错误状态 
+            cin.ignore(1000, '\n'); // 丢弃缓冲区中的错误字符 
+            continue;
+        }
+        if (choice >= 1 && choice < 4)
+        {
+            activityStack.selectionFlow(choice);
+        }
+        else if(choice == 4){
+            cout << "[System] Exiting Task 2 Test...\n";
+        }
+        else{
+            cout << "Please enter the number from 1 to 4.\n";
+        }
+        
+    }while(choice != 4);
 
     return 0;
 

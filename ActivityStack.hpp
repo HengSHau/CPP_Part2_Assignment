@@ -27,6 +27,7 @@ public:
     Activity pop();             // "Undo" / Go back to previous activity
     Activity peek();            // Look at the current activity
     void displayStack();        // Show the sequence of activities
+    void selectionFlow(int choice);
 };
 
 #endif
