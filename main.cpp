@@ -4,11 +4,12 @@
 #include "Types.hpp"
 #include "RegistrationQueue.hpp"
 #include "ActivityStack.hpp"
-
+#include "ActivityLog.hpp"
 
 using namespace std;
 
-void loadLearnerFromCSV(string filename,RegistrationQueue& queue){
+void loadLearnerFromCSV(string filename,RegistrationQueue& queue)
+{
     ifstream file(filename);
     string line;
 
@@ -32,13 +33,15 @@ void loadLearnerFromCSV(string filename,RegistrationQueue& queue){
     file.close();
 }
 
-int main() {
+int main() 
+{
     cout << "=================================================\n";
     cout << "   PLAPS Prototype - Task 1 Full Test            \n";
     cout << "=================================================\n\n";
 
     RegistrationQueue systemQueue(100); // Set waitlist max capacity to 50
     ActivityStack activityStack;
+    ActivityLog myActivityLog;
 
     loadLearnerFromCSV("Learner.csv",systemQueue);
     
@@ -66,7 +69,7 @@ int main() {
         cout << "=================================================\n";
         cout << "   PLAPS Prototype - Task 2 Full Test            \n";
         cout << "=================================================\n";
-        cout << "1. Next Activity\n2. Go Back (Undo)\n3. View Current Progress\n4. Exit Session\nChoice: ";
+        cout << "1. Next Activity\n2. Go Back (Undo)\n3. View Current Progress\n4. Exit Session\n5. View Task 3 Logs\n6. Export Task 3 CSV\nChoice: ";
         
         if (!(cin >> choice)) { // 检查输入是否为数字 
             cout << "[Error] Please enter a valid numeric value.\n";
@@ -74,19 +77,41 @@ int main() {
             cin.ignore(1000, '\n'); // 丢弃缓冲区中的错误字符 
             continue;
         }
-        if (choice >= 1 && choice < 4)
+        if (choice == 1 )
+        {
+            string currentID;
+            cout <<"Enter Student ID: ";
+            cin >> currentID;
+    
+            activityStack.selectionFlow(choice);
+
+            Activity newLog = activityStack.peek(); 
+    
+            newLog.learnerID = currentID; 
+    
+            myActivityLog.addLog(newLog);
+
+             cout << "[System] Activity recorded for " << currentID << ".\n"; 
+        }
+        else if (choice == 2 || choice == 3)\
         {
             activityStack.selectionFlow(choice);
-        }
+        }    
         else if(choice == 4){
             cout << "[System] Exiting Task 2 Test...\n";
         }
+        else if (choice == 5) {
+            myActivityLog.displayAll();
+        }
+        else if (choice == 6){
+            myActivityLog.exportToCSV();
+        }
         else{
-            cout << "Please enter the number from 1 to 4.\n";
+            cout << "Please enter the number from 1 to 6.\n";
         }
         
     }while(choice != 4);
-
+    
     return 0;
 
 }

@@ -40,7 +40,7 @@ void ActivityStack::push(Activity a) {
 Activity ActivityStack::pop() {
     if (isEmpty()) {
         cout << "[Session] No previous activities to go back to.\n";
-        return {"EMPTY", "None", "None", 0.0};
+        return {"None","EMPTY", "None", "None", 0.0};
     }
 
     // Store the top node temporarily
@@ -61,7 +61,7 @@ Activity ActivityStack::pop() {
 // 3. Look at the current (top) activity without removing it
 Activity ActivityStack::peek() {
     if (isEmpty()) {
-        return {"EMPTY", "None", "None", 0.0};
+        return {"NONE","EMPTY", "None", "None", 0.0};
     }
     return top->data;
 }
@@ -100,7 +100,7 @@ void ActivityStack::selectionFlow(int choice) {
         cout << "Enter Score: "; cin >> score;
 
         // 生成 ID 并直接 push 到当前对象 (this)
-        Activity newAct = {"ACT_" + to_string(rand() % 100), topic, diff, score};
+        Activity newAct = {"TP076397", "ACT_" + to_string(rand() % 100), topic, diff, score};
         this->push(newAct); // 使用 this-> 或者直接调用 push [cite: 30]
 
     } else if (choice == 2) {

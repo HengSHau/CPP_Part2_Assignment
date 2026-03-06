@@ -21,6 +21,7 @@ struct Learner {
 
 // The Activity data (Used later for Task 2 and Task 3)
 struct Activity {
+    std::string learnerID;
     std::string activityID;
     std::string topic;
     std::string difficulty;
