@@ -79,14 +79,12 @@ int main()
         }
         if (choice == 1 )
         {
-            string currentID;
-            cout <<"Enter Student ID: ";
-            cin >> currentID;
+            string currentID="TP001001";
+            cout << "[System] Auto-linked to Active Learner: " << currentID << endl;
     
             activityStack.selectionFlow(choice);
 
             Activity newLog = activityStack.peek(); 
-    
             newLog.learnerID = currentID; 
     
             myActivityLog.addLog(newLog);
