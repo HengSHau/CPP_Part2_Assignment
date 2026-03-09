@@ -2,9 +2,12 @@
 #ifndef ACTIVITYSTACK_HPP
 #define ACTIVITYSTACK_HPP
 
-#include "Types.hpp"
 #include <iostream>
+#include <string>
 
+using namespace std;
+
+#include "Types.hpp"
 // The Node for our Linked List Stack
 struct StackNode {
     Activity data;
@@ -27,7 +30,7 @@ public:
     Activity pop();             // "Undo" / Go back to previous activity
     Activity peek();            // Look at the current activity
     void displayStack();        // Show the sequence of activities
-    void selectionFlow(int choice);
+    void selectionFlow(int choice, std::string LearnerID);
 };
 
 #endif

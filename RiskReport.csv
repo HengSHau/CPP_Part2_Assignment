@@ -1,0 +1,9 @@
+Rank,LearnerID,RiskScore,Recommendation
+
+Rank,LearnerID,RiskScore,Recommendation
+1,TP034569,10,All good, proceed to the next activity
+Rank,LearnerID,RiskScore,Recommendation
+1,TP045678,10,All good, proceed to the next activity
+Rank,LearnerID,RiskScore,Recommendation
+1,TP434567,40,Review the current topic before attempt the next activity
+2,TP045678,10,All good, proceed to the next activity

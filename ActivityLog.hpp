@@ -49,7 +49,7 @@ void displayAll() {
 
 void exportToCSV(){
     ofstream myFile("ActivityHistory.csv");
-    myFile << "LearnerID, Topic, Dicfficulty, Score" << endl;
+    myFile << "LearnerID, Topic, Difficulty, Score" << endl;
 
     for (int i = 0 ; i < currentTotal; i++) {
         myFile << logs[i].learnerID <<","

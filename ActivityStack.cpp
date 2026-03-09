@@ -1,5 +1,6 @@
 // ActivityStack.cpp
 #include "ActivityStack.hpp"
+#include <string>
 
 using namespace std;
 
@@ -91,16 +92,51 @@ void ActivityStack::displayStack() {
     cout << "-------------------------------------------------\n";
 }
 
-void ActivityStack::selectionFlow(int choice) {   
+void ActivityStack::selectionFlow(int choice, string LearnerID) {   
     if (choice == 1) {
-        string topic, diff;
+        string topic;
+        int diff;
         float score;
-        cout << "Enter Topic: "; cin >> topic;
-        cout << "Enter Difficulty: "; cin >> diff;
-        cout << "Enter Score: "; cin >> score;
+
+        cout << "Enter Topic Name: "; cin >> topic;
+
+        //Difficulty 
+        cout << "Enter Difficulty (1: Easy, 2: Medium, 3: Hard): ";
+        while (!(cin >> diff) || diff <1 || diff>3 )
+        {
+            cout << "Invalid Selection (Only enter 1-3):";
+            cin.clear();
+            cin.ignore();
+        }       
+
+        string FinalDifficult;
+        if (diff == 1){
+            FinalDifficult = "Easy";
+        }
+        else if (diff == 2)
+        {
+            FinalDifficult = "Medium";
+        }
+        else{ FinalDifficult = "Hard";}
+
+        // Score validation 
+        cout << "Enter Score (0-100):";
+        while (!(cin >> score) || score < 0 || score > 100 ){
+            cout << "Please enter a valid number (0-100):";
+            cin.clear();
+            cin.ignore();
+        }
+
+        //status check if student pass or failed （task 4）
+        int failStatus = 0;
+        if (score<60)
+        {
+            failStatus = 1;
+        }
+        
 
         // 生成 ID 并直接 push 到当前对象 (this)
-        Activity newAct = {"TP076397", "ACT_" + to_string(rand() % 100), topic, diff, score};
+        Activity newAct = {"TP076397", "ACT_" + to_string(rand() % 100), topic, FinalDifficult, score};
         this->push(newAct); // 使用 this-> 或者直接调用 push [cite: 30]
 
     } else if (choice == 2) {
