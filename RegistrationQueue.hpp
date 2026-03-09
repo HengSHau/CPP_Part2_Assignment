@@ -39,6 +39,8 @@ public:
 
     void displayWaitlist();
     void displayActiveSession();
+
+    bool isLearnerExist(string learnerID);
 };
 
 #endif
