@@ -5,6 +5,7 @@
 #include <cctype> 
 
 #include "RegistrationQueue.hpp"
+#include "ActivityStack.hpp"
 
 
 using namespace std;
@@ -56,6 +57,7 @@ void loadLearnerFromCSV(string filename,RegistrationQueue& queue){
 
 int main() {
     RegistrationQueue systemQueue(100);
+    Task2Manager systemActivity;
 
     loadLearnerFromCSV("Learner.csv",systemQueue);
 
@@ -64,12 +66,13 @@ int main() {
     do{
         cout<<"\n======================================\n";
         cout<<"       PLAPS Session Manager Menu       \n";
-        cout<<"\n======================================\n";
+        cout<<"======================================\n";
         cout<<"1. Register New User to Waitlist\n";
         cout<<"2. Admit User to active session\n";
         cout<<"3. Remove user from Active Session\n";
         cout<<"4. Display Waitlist & Active Session\n";
-        cout<<"5. Exit System \n";
+        cout<<"5. Start Activity\n";
+        cout<<"6. Exit System\n";
 
         cout<<"Enter choose: ";
         cin>>choice;
@@ -123,15 +126,24 @@ int main() {
                 break;
             }
             case 5:{
+                systemQueue.displayActiveSession(); 
+                if (systemQueue.activeCount > 0) {
+                    int choose;
+                    cout << "\nEnter the student index (1, 2, 3...) to start: ";
+                    cin >> choose;
+                    systemActivity.selectStudent(choose, systemQueue);
+                }
+                break;
+            }
+            case 6:{
                 cout<<"Existing system.ByeBye!\n";
                 break;
             }
             default:
                 cout<<"Invalid choice.Please choose within 1-5";
-
         }
 
-    } while(choice!=5);
+    } while(choice!=6);
 
     return 0;
 
