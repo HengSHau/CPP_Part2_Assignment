@@ -1,6 +1,6 @@
 #include "ActivityStack.hpp"
 
-// --- ActivityStack 实现 ---
+// --- ActivityStack 实现 (保持不变) ---
 ActivityStack::ActivityStack() : top(nullptr) {}
 
 ActivityStack::~ActivityStack() {
@@ -37,13 +37,14 @@ Task2Manager::Task2Manager() {
     questions[1][1] = {"In a switch-case, which keyword runs if no cases match?", "default"};
     questions[1][2] = {"Which keyword is used to deallocate memory allocated with 'new'?", "delete"};
 
+    // Hard 题目
     questions[2][0] = {"The answer of 2 7 + 3 / 4 -", "-1"};
     questions[2][1] = {"Maximum children of binary tree", "2"};
     questions[2][2] = {"Which data structure allows insertion/deletion at both ends?", "deque"};
-
 }
 
-void Task2Manager::selectStudent(int choose, RegistrationQueue& regQueue) {
+// 修正点 1: 增加 ActivityLog& task3 参数
+void Task2Manager::selectStudent(int choose, RegistrationQueue& regQueue, ActivityLog& task3) {
     if (regQueue.activeCount == 0) {
         cout << "[System] No learners in active session!\n";
         return;
@@ -55,37 +56,38 @@ void Task2Manager::selectStudent(int choose, RegistrationQueue& regQueue) {
 
     Learner selected = regQueue.activeSession[choose - 1];
     
-    // 修改：只有当 startSession 返回 true (表示真正完成) 时，才移出列表
-    if (startSession(selected.learnerID, selected.name, regQueue)) {
+    // 修正点 2: 传递 task3 给 startSession
+    if (startSession(selected.learnerID, selected.name, regQueue, task3)) {
         regQueue.exitSession(selected.learnerID);
     } else {
         cout << "[System] Activity cancelled. Learner remains in active list.\n";
     }
 }
 
-bool Task2Manager::startSession(string studentID, string studentName, RegistrationQueue& regQueue) {
-    while (true) { // 使用循环，方便从题目退回后重新选择难度
+// 修正点 3: 增加 ActivityLog& task3 参数
+bool Task2Manager::startSession(string studentID, string studentName, RegistrationQueue& regQueue, ActivityLog& task3) {
+    while (true) { 
         int difficulty = -1;
         cout << "\n--- Select Difficulty for " << studentName << " ---" << endl;
         cout << "(0: Easy, 1: Medium, 2: Hard, -1: Back to Main Menu): ";
         cin >> difficulty;
 
-        if (difficulty == -1) return false; // 返回 false，不移出 active list
+        if (difficulty == -1) return false;
 
         if (difficulty >= 0 && difficulty <= 2) {
-            // 如果 runActivity 返回 true，说明做完了
-            if (runActivity(difficulty, studentID, studentName)) {
+            // 修正点 4: 传递 task3 给 runActivity
+            if (runActivity(difficulty, studentID, studentName, task3)) {
                 return true; 
             }
-            // 如果 runActivity 返回 false (第一题按Q)，则继续 while 循环重新选难度
         }
     }
 }
 
-bool Task2Manager::runActivity(int diff, string id, string name) {
+// 修正点 5: 增加 ActivityLog& task3 参数
+bool Task2Manager::runActivity(int diff, string id, string name, ActivityLog& task3) {
     int currentIndex = 0;
     int score = 0;
-    int questionScores[3] = {0, 0, 0}; // 新增：记录每一题拿到的分数
+    int questionScores[3] = {0, 0, 0}; 
     string input;
 
     while (!history.isEmpty()) history.pop();
@@ -98,23 +100,22 @@ bool Task2Manager::runActivity(int diff, string id, string name) {
 
         if (input == "Q" || input == "q") {
             if (currentIndex == 0) {
-                return false; // 第一题按Q，返回 false 回到难度选择
+                return false; 
             } else {
                 currentIndex = history.pop(); 
-                // 修复刷分：回退时，扣除那一题之前加上的分数
                 score -= questionScores[currentIndex]; 
-                questionScores[currentIndex] = 0; // 重置该题分数记录
+                questionScores[currentIndex] = 0; 
                 cout << "[System] Back to previous question. Score adjusted." << endl;
                 continue;
             }
         }
 
         if (input == questions[diff][currentIndex].answer) {
-            questionScores[currentIndex] = 10; // 记录这题拿了10分
+            questionScores[currentIndex] = 10; 
             score += 10;
             cout << ">> Correct!" << endl;
         } else {
-            questionScores[currentIndex] = 0; // 没拿分
+            questionScores[currentIndex] = 0; 
             cout << ">> Wrong answer." << endl;
         }
 
@@ -122,12 +123,14 @@ bool Task2Manager::runActivity(int diff, string id, string name) {
         currentIndex++;
     }
 
-    completeSession(id, name, diff, score);
-    return true; // 真正完成三道题，返回 true
+    // 修正点 6: 传递 task3 给 completeSession
+    completeSession(id, name, diff, score, task3);
+    return true; 
 }
 
-void Task2Manager::completeSession(string id, string name, int diff, int score) {
-   string dStr = (diff == 0) ? "Easy" : (diff == 1) ? "Medium" : "Hard";
+// 修正点 7: 这里的逻辑已经帮你整合好了
+void Task2Manager::completeSession(string id, string name, int diff, int score, ActivityLog& task3) {
+    string dStr = (diff == 0) ? "Easy" : (diff == 1) ? "Medium" : "Hard";
     
     cout << "\n======================================" << endl;
     cout << "          ACTIVITY COMPLETED!         " << endl;
@@ -138,6 +141,15 @@ void Task2Manager::completeSession(string id, string name, int diff, int score) 
     cout << "======================================" << endl;
     
     cout << "\nPress Enter to return to Main Menu...";
-    cin.ignore(); // 清除之前的回车
-    cin.get();    // 等待用户按键
+    cin.ignore(); 
+    cin.get();    
+
+    // --- 自动存入 Task 3 ---
+    Activity newRecord;
+    newRecord.learnerID = id;
+    newRecord.topic = "General Programming"; 
+    newRecord.difficulty = dStr; // 记录难度
+    newRecord.score = (float)score;
+    
+    task3.addLog(newRecord); // 这会自动触发 exportToCSV
 }

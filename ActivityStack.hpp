@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include "RegistrationQueue.hpp" // 必须包含 Task 1 的头文件以识别 Learner 和 RegistrationQueue
+#include "ActivityLog.hpp"
 
 using namespace std;
 
@@ -41,16 +42,15 @@ public:
     Task2Manager();
 
     // 核心：显示并选择学生
-    void selectStudent(int choose, RegistrationQueue& regQueue);
+    void selectStudent(int choose, RegistrationQueue& regQueue, ActivityLog& task3);
 
     // 开始会话
-    bool startSession(string studentID, string studentName, RegistrationQueue& regQueue);
+    bool startSession(string studentID, string studentName, RegistrationQueue& regQueue, ActivityLog& task3);
 
     // 运行题目逻辑
-    bool runActivity(int diff, string id, string name);
+    bool runActivity(int diff, string id, string name, ActivityLog& task3);
 
     // 完成后的清理和数据记录
-    void completeSession(string id, string name, int diff, int score);
-};
+    void completeSession(string id, string name, int diff, int score, ActivityLog& task3);};
 
 #endif
