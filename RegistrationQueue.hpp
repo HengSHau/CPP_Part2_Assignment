@@ -19,11 +19,10 @@ private:
     QueueNode* rear;  // Points to the last person in line
     int currentSize;
     int maxCapacity;  
-
+   
+public:
     Learner activeSession[5];
     int activeCount;
-
-public:
     // Constructor & Destructor
     RegistrationQueue(int capacity = 50);
     ~RegistrationQueue();
@@ -39,6 +38,8 @@ public:
 
     void displayWaitlist();
     void displayActiveSession();
+
+    bool isLearnerExist(string learnerID);
 };
 
 #endif

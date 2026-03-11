@@ -2,11 +2,34 @@
 #include <fstream>
 #include <sstream>
 #include "Types.hpp"
+#include <cctype> 
+
 #include "RegistrationQueue.hpp"
 #include "ActivityStack.hpp"
 
 
 using namespace std;
+
+bool isValidIDFormat(string id) {
+    // 1. Check if it's exactly 7 characters long
+    if (id.length() != 7) {
+        return false;
+    }
+    
+    // 2. Check if it starts with 'T' and 'P' (Case-insensitive)
+    if (toupper(id[0]) != 'T' || toupper(id[1]) != 'P') {
+        return false;
+    }
+
+    // 3. Check if the remaining 5 characters are numbers
+    for (int i = 2; i < 7; i++) {
+        if (!isdigit(id[i])) {
+            return false; // Found a letter where a number should be!
+        }
+    }
+
+    return true; 
+}
 
 void loadLearnerFromCSV(string filename,RegistrationQueue& queue){
     ifstream file(filename);
@@ -33,59 +56,94 @@ void loadLearnerFromCSV(string filename,RegistrationQueue& queue){
 }
 
 int main() {
-    cout << "=================================================\n";
-    cout << "   PLAPS Prototype - Task 1 Full Test            \n";
-    cout << "=================================================\n\n";
-
-    RegistrationQueue systemQueue(100); // Set waitlist max capacity to 50
-    ActivityStack activityStack;
+    RegistrationQueue systemQueue(100);
+    Task2Manager systemActivity;
 
     loadLearnerFromCSV("Learner.csv",systemQueue);
-    
-    systemQueue.displayWaitlist();
-
-    // 3. Admit Students to the Active Lab (Capacity is 5)
-    cout << "\n--- Phase 2: Opening the Lab (5 Computers) ---\n";
-    systemQueue.admitToSession();
-    systemQueue.admitToSession(); 
-    systemQueue.admitToSession(); 
-    systemQueue.admitToSession(); 
-    systemQueue.admitToSession(); 
-    
-    // This 6th attempt should trigger your "FULL" warning!
-    cout << "\n[Attempting to admit 6th student...]\n";
-    systemQueue.admitToSession(); 
-
-    // 4. Show the current state of both lists
-    systemQueue.displayActiveSession(); // Should have 5 students
-    systemQueue.displayWaitlist();      // Should have 2 left (David and Sarah)
 
     int choice;
+
     do{
-        cout << endl;
-        cout << "=================================================\n";
-        cout << "   PLAPS Prototype - Task 2 Full Test            \n";
-        cout << "=================================================\n";
-        cout << "1. Next Activity\n2. Go Back (Undo)\n3. View Current Progress\n4. Exit Session\nChoice: ";
-        
-        if (!(cin >> choice)) { // 检查输入是否为数字 
-            cout << "[Error] Please enter a valid numeric value.\n";
-            cin.clear(); // 清除错误状态 
-            cin.ignore(1000, '\n'); // 丢弃缓冲区中的错误字符 
-            continue;
+        cout<<"\n======================================\n";
+        cout<<"       PLAPS Session Manager Menu       \n";
+        cout<<"======================================\n";
+        cout<<"1. Register New User to Waitlist\n";
+        cout<<"2. Admit User to active session\n";
+        cout<<"3. Remove user from Active Session\n";
+        cout<<"4. Display Waitlist & Active Session\n";
+        cout<<"5. Start Activity\n";
+        cout<<"6. Exit System\n";
+
+        cout<<"Enter choose: ";
+        cin>>choice;
+        cin.ignore();
+
+        switch (choice){
+            case 1:{
+                string newId,newName;
+                cout<<"\n--- Register New Learner ---\n";
+                cout<<"Enter Learner ID (e.g., TP12345): ";
+                getline(cin,newId);
+
+                if(!isValidIDFormat(newId)){
+                    cout<<"Error!! Ivalid Format! ID must start from TP then 5 digits.";
+                    break;
+                }
+
+                newId[0]=toupper(newId[0]);
+                newId[1]=toupper(newId[1]);
+
+                if(systemQueue.isLearnerExist(newId)){
+                    cout<<"Error!! Learner ID"<<newId<<"already exists.";
+                    break;
+                }
+
+                cout<<"Enter Leaner Name: ";
+                getline(cin,newName);
+
+                Learner manualStudent={newId,newName,0.0,0,0.0,0.0,""};
+                systemQueue.enqueue(manualStudent);
+                break;
+            }
+
+            case 2:{
+                cout<<"\n--- Admitting Learner ---\n";
+                systemQueue.admitToSession();
+                break;
+            }
+            case 3:{
+                string removeID;
+                cout<<"\n --- Remove Active Learner ---\n";
+                systemQueue.displayActiveSession();
+                cout<<"Enter ID that you want to remove: ";
+                getline(cin,removeID);
+                systemQueue.exitSession(removeID);
+                break;
+            }
+            case 4:{
+                systemQueue.displayWaitlist();
+                systemQueue.displayActiveSession();
+                break;
+            }
+            case 5:{
+                systemQueue.displayActiveSession(); 
+                if (systemQueue.activeCount > 0) {
+                    int choose;
+                    cout << "\nEnter the student index (1, 2, 3...) to start: ";
+                    cin >> choose;
+                    systemActivity.selectStudent(choose, systemQueue);
+                }
+                break;
+            }
+            case 6:{
+                cout<<"Existing system.ByeBye!\n";
+                break;
+            }
+            default:
+                cout<<"Invalid choice.Please choose within 1-5";
         }
-        if (choice >= 1 && choice < 4)
-        {
-            activityStack.selectionFlow(choice);
-        }
-        else if(choice == 4){
-            cout << "[System] Exiting Task 2 Test...\n";
-        }
-        else{
-            cout << "Please enter the number from 1 to 4.\n";
-        }
-        
-    }while(choice != 4);
+
+    } while(choice!=6);
 
     return 0;
 
