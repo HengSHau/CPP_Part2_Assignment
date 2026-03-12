@@ -1,157 +1,156 @@
-// ActivityStack.cpp
 #include "ActivityStack.hpp"
 #include <string>
 
-using namespace std;
+// --- ActivityStack 实现 (保持不变) ---
+ActivityStack::ActivityStack() : top(nullptr) {}
 
-// Constructor
-ActivityStack::ActivityStack() {
-    top = nullptr;
-    currentSize = 0;
-}
-
-// Destructor to clean up memory and prevent leaks
 ActivityStack::~ActivityStack() {
-    while (!isEmpty()) {
-        pop(); // Delete all nodes when the session ends
-    }
+    while (!isEmpty()) pop();
 }
 
-// Check if the stack is empty
+void ActivityStack::push(int index) {
+    StackNode* newNode = new StackNode{index, top};
+    top = newNode;
+}
+
+int ActivityStack::pop() {
+    if (isEmpty()) return -1;
+    StackNode* temp = top;
+    int index = temp->questionIndex;
+    top = top->next;
+    delete temp;
+    return index;
+}
+
 bool ActivityStack::isEmpty() {
     return top == nullptr;
 }
 
-// 1. Move to a new activity (Add to TOP of stack)
-void ActivityStack::push(Activity a) {
-    StackNode* newNode = new StackNode;
-    newNode->data = a;
-    
-    // The new node's next points to the old top
-    newNode->next = top;
-    
-    // The top pointer now points to our new node
-    top = newNode;
-    currentSize++;
-    
-    cout << "[Session] Started new activity: " << a.topic << " (" << a.difficulty << ")\n";
+// --- Task2Manager 实现 ---
+Task2Manager::Task2Manager() {
+    // Easy 题目
+    questions[0][0] = {"What is the output of the x?\nx = '1' + '1' ", "11"};
+    questions[0][1] = {"C++ keyword for integer?", "int"};
+    questions[0][2] = {"Is 'cout' for output? (yes/no)", "yes"};
+
+    // Medium 题目
+    questions[1][0] = {"Which principle does a Stack follow? (FIFO/LIFO)", "LIFO"};
+    questions[1][1] = {"In a switch-case, which keyword runs if no cases match?", "default"};
+    questions[1][2] = {"Which keyword is used to deallocate memory allocated with 'new'?", "delete"};
+
+    // Hard 题目
+    questions[2][0] = {"The answer of 2 7 + 3 / 4 -", "-1"};
+    questions[2][1] = {"Maximum children of binary tree", "2"};
+    questions[2][2] = {"Which data structure allows insertion/deletion at both ends?", "deque"};
 }
 
-// 2. Undo / Go back (Remove from TOP of stack)
-Activity ActivityStack::pop() {
-    if (isEmpty()) {
-        cout << "[Session] No previous activities to go back to.\n";
-        return {"None","EMPTY", "None", "None", 0.0};
+// 修正点 1: 增加 ActivityLog& task3 参数
+void Task2Manager::selectStudent(int choose, RegistrationQueue& regQueue, ActivityLog& task3) {
+    if (regQueue.activeCount == 0) {
+        cout << "[System] No learners in active session!\n";
+        return;
     }
-
-    // Store the top node temporarily
-    StackNode* temp = top;
-    Activity poppedActivity = temp->data;
-
-    // Move the top pointer down to the next node
-    top = top->next;
-
-    // Delete the old top from memory
-    delete temp;
-    currentSize--;
-
-    cout << "[Session] 'Undo' triggered. Went back from: " << poppedActivity.topic << "\n";
-    return poppedActivity;
-}
-
-// 3. Look at the current (top) activity without removing it
-Activity ActivityStack::peek() {
-    if (isEmpty()) {
-        return {"NONE","EMPTY", "None", "None", 0.0};
-    }
-    return top->data;
-}
-
-// 4. Display the sequence of activities (From top to bottom)
-void ActivityStack::displayStack() {
-    if (isEmpty()) {
-        cout << "Activity history is empty.\n";
+    if (choose < 1 || choose > regQueue.activeCount) {
+        cout << "[Error] Invalid index!\n";
         return;
     }
 
-    cout << "\n--- Current Activity Sequence (Top = Current) ---\n";
-    StackNode* current = top;
-    int position = currentSize;
+    Learner selected = regQueue.activeSession[choose - 1];
     
-    while (current != nullptr) {
-        if (current == top) {
-            cout << position << ". [" << current->data.activityID << "] " 
-                 << current->data.topic << " (Score: " << current->data.score << ") <-- CURRENT\n";
-        } else {
-            cout << position << ". [" << current->data.activityID << "] " 
-                 << current->data.topic << " (Score: " << current->data.score << ")\n";
-        }
-        current = current->next;
-        position--;
+    // 修正点 2: 传递 task3 给 startSession
+    if (startSession(selected.learnerID, selected.name, regQueue, task3)) {
+        regQueue.exitSession(selected.learnerID);
+    } else {
+        cout << "[System] Activity cancelled. Learner remains in active list.\n";
     }
-    cout << "-------------------------------------------------\n";
 }
 
-void ActivityStack::selectionFlow(int choice, string LearnerID) {   
-    if (choice == 1) {
-        string topic;
-        int diff;
-        float score;
+// 修正点 3: 增加 ActivityLog& task3 参数
+bool Task2Manager::startSession(string studentID, string studentName, RegistrationQueue& regQueue, ActivityLog& task3) {
+    while (true) { 
+        int difficulty = -1;
+        cout << "\n--- Select Difficulty for " << studentName << " ---" << endl;
+        cout << "(0: Easy, 1: Medium, 2: Hard, -1: Back to Main Menu): ";
+        cin >> difficulty;
 
-        cout << "Enter Topic Name: "; cin >> topic;
+        if (difficulty == -1) return false;
 
-        //Difficulty 
-        cout << "Enter Difficulty (1: Easy, 2: Medium, 3: Hard): ";
-        while (!(cin >> diff) || diff <1 || diff>3 )
-        {
-            cout << "Invalid Selection (Only enter 1-3):";
-            cin.clear();
-            cin.ignore();
-        }       
-
-        string FinalDifficult;
-        if (diff == 1){
-            FinalDifficult = "Easy";
+        if (difficulty >= 0 && difficulty <= 2) {
+            // 修正点 4: 传递 task3 给 runActivity
+            if (runActivity(difficulty, studentID, studentName, task3)) {
+                return true; 
+            }
         }
-        else if (diff == 2)
-        {
-            FinalDifficult = "Medium";
-        }
-        else{ FinalDifficult = "Hard";}
-
-        // Score validation 
-        cout << "Enter Score (0-100):";
-        while (!(cin >> score) || score < 0 || score > 100 ){
-            cout << "Please enter a valid number (0-100):";
-            cin.clear();
-            cin.ignore();
-        }
-
-        //status check if student pass or failed （task 4）
-        int failStatus = 0;
-        if (score<60)
-        {
-            failStatus = 1;
-        }
-        
-
-        // 生成 ID 并直接 push 到当前对象 (this)
-        Activity newAct = {"TP076397", "ACT_" + to_string(rand() % 100), topic, FinalDifficult, score};
-        this->push(newAct); // 使用 this-> 或者直接调用 push [cite: 30]
-
-    } else if (choice == 2) {
-        // 直接在当前对象上操作 pop [cite: 31]
-        Activity prev = this->pop(); 
-        if (prev.topic != "None") {
-            cout << "Backtracking from " << prev.topic << "..." << endl;
-        }
-
-    } else if (choice == 3) {
-        // 展示当前对象的栈状态 [cite: 39]
-        this->displayStack(); 
-
-    } else if (choice == 4) {
-        cout << "Ending session. Data sent to logging system." << endl;
-        // 这里应调用 Task 3 的接口 [cite: 33]
     }
+}
+
+// 修正点 5: 增加 ActivityLog& task3 参数
+bool Task2Manager::runActivity(int diff, string id, string name, ActivityLog& task3) {
+    int currentIndex = 0;
+    int score = 0;
+    int questionScores[3] = {0, 0, 0}; 
+    string input;
+
+    while (!history.isEmpty()) history.pop();
+
+    while (currentIndex < 3) {
+        cout << "\n[Question " << currentIndex + 1 << "]: " << questions[diff][currentIndex].content << endl;
+        cout << "Current Score: " << score << endl;
+        cout << "Your Answer (or 'Q' to go back): ";
+        cin >> input;
+
+        if (input == "Q" || input == "q") {
+            if (currentIndex == 0) {
+                return false; 
+            } else {
+                currentIndex = history.pop(); 
+                score -= questionScores[currentIndex]; 
+                questionScores[currentIndex] = 0; 
+                cout << "[System] Back to previous question. Score adjusted." << endl;
+                continue;
+            }
+        }
+
+        if (input == questions[diff][currentIndex].answer) {
+            questionScores[currentIndex] = 10; 
+            score += 10;
+            cout << ">> Correct!" << endl;
+        } else {
+            questionScores[currentIndex] = 0; 
+            cout << ">> Wrong answer." << endl;
+        }
+
+        history.push(currentIndex);
+        currentIndex++;
+    }
+
+    // 修正点 6: 传递 task3 给 completeSession
+    completeSession(id, name, diff, score, task3);
+    return true; 
+}
+
+// 修正点 7: 这里的逻辑已经帮你整合好了
+void Task2Manager::completeSession(string id, string name, int diff, int score, ActivityLog& task3) {
+    string dStr = (diff == 0) ? "Easy" : (diff == 1) ? "Medium" : "Hard";
+    
+    cout << "\n======================================" << endl;
+    cout << "          ACTIVITY COMPLETED!         " << endl;
+    cout << "======================================" << endl;
+    cout << "Student: " << name << " (" << id << ")" << endl;
+    cout << "Difficulty: " << dStr << endl;
+    cout << "Final Score: " << score << "/30" << endl;
+    cout << "======================================" << endl;
+    
+    cout << "\nPress Enter to return to Main Menu...";
+    cin.ignore(); 
+    cin.get();    
+
+    // --- 自动存入 Task 3 ---
+    Activity newRecord;
+    newRecord.learnerID = id;
+    newRecord.topic = "General Programming"; 
+    newRecord.difficulty = dStr; // 记录难度
+    newRecord.score = (float)score;
+    
+    task3.addLog(newRecord); // 这会自动触发 exportToCSV
 }

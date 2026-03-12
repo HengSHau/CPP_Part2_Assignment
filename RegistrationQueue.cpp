@@ -140,3 +140,20 @@ void RegistrationQueue::displayActiveSession() {
         cout << i + 1 << ". [" << activeSession[i].learnerID << "] " << activeSession[i].name << "\n";
     }
 }
+
+bool RegistrationQueue::isLearnerExist(string learnerID){
+    for (int i=0;i<activeCount;i++){
+        if(activeSession[i].learnerID==learnerID){
+            return true;
+        }
+    }
+
+    QueueNode*current=front;
+    while(current!=nullptr){
+        if(current->data.learnerID==learnerID){
+            return true;
+        }
+        current=current->next;
+    }
+    return false;
+}

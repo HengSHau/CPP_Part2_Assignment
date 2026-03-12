@@ -1,7 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <cctype> // Added to ensure isdigit() works
 #include "Types.hpp"
 #include <cctype> 
 
@@ -37,21 +36,21 @@ void loadLearnerFromCSV(string filename,RegistrationQueue& queue){
     ifstream file(filename);
     string line;
 
-    if (!file.is_open()) {
-        cout << "Error!! Could Not open file" << filename << endl;
+    if(!file.is_open()){
+        cout<<"Error!! Could Not open file"<<filename<<endl;
         return;
     }
 
-    cout << "Reading data from " << filename << endl;
+    cout<<"Reading data from "<<filename<<endl;
 
-    while (getline(file, line)) {
+    while(getline(file,line)){
         stringstream ss(line);
-        string id, name;
+        string id,name;
 
-        getline(ss, id, ',');
-        getline(ss, name, ',');
+        getline(ss,id,',');
+        getline(ss,name,',');
 
-        Learner newStudent = {id, name, 0.0, 0, 0.0, 0.0, ""};
+        Learner newStudent={id,name,0.0,0,0.0,0.0,""};
         queue.enqueue(newStudent);
     }
     file.close();

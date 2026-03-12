@@ -1,3 +1,7 @@
-LearnerID, Topic, Difficulty, Score
-TP023485,A,Easy,100
-TP043456,A,Hard,23
+ID,Topic,Difficulty,Score
+TP01002,General Programming,Easy,10
+TP01003,General Programming,Easy,20
+TP01004,General Programming,Easy,30
+TP01005,General Programming,Medium,20
+TP01006,General Programming,Hard,10
+TP01007,General Programming,Medium,10

@@ -4,62 +4,19 @@
 #include "Types.hpp"
 #include <iostream>
 #include <fstream>
-#include <string>
-
-using namespace std;
 
 class ActivityLog {
-    public:
-    Activity logs [5];
-    int nextIndex;
-    int currentTotal;
+private:
+    Activity logs[6]; // 循环队列大小为 6，达到 6 条后会自动覆盖第一条
+    int head;         // 队列头部索引
+    int count;        // 当前存储的日志条数
 
-    ActivityLog() {
-        nextIndex = 0;
-        currentTotal = 0;
-    }
-
-void addLog (Activity data) {
-    logs [nextIndex] = data;
-
-    nextIndex = nextIndex+1;
-
-    if (nextIndex==5) {
-        nextIndex = 0;
-    }
-
-    if (currentTotal<5) {
-        currentTotal = currentTotal+1;
-    }
-}
-
-void displayAll() {
-    cout << "\n---RECENT ACTIVITY LOGS (Task 3)---" << endl;
-    if (currentTotal==0){
-        cout << "No logs recorded yet."<< endl;
-        return;
-    }
-
-    for(int i = 0; i< currentTotal; i++) {
-        cout <<"["<< i + 1 <<"] Student: "<< logs[i].learnerID
-        << " | Topic:" << logs[i].topic
-        << " | Score:" << logs[i].score << endl;
-    }
-}
-
-void exportToCSV(){
-    ofstream myFile("ActivityHistory.csv");
-    myFile << "LearnerID, Topic, Difficulty, Score" << endl;
-
-    for (int i = 0 ; i < currentTotal; i++) {
-        myFile << logs[i].learnerID <<","
-               << logs[i].topic<< ","
-               << logs[i].difficulty<<","
-               << logs[i].score<< endl;
-    }
-    myFile.close();
-    cout << "[System] History exported to 'ActivityHistory.csv'!"<< endl;
-    }   
+public:
+    ActivityLog();
+    void addLog(Activity newAct); // 添加日志的核心逻辑
+    void displayAll();           // 打印所有日志到屏幕
+    void exportToCSV();          // 导出到 CSV 文件
+    void filterByLearner(std::string searchID);
 };
 
 #endif
