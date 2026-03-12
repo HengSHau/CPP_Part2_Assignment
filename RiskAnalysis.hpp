@@ -2,7 +2,6 @@
 #define RiskAnalysis_HPP
 
 #include <string>
-#include "ActivityLog.hpp"
 
 using namespace std;
 
@@ -16,14 +15,17 @@ struct RiskProfile
 
 class RiskAnalysis{
 public: 
-    void runAnalysis(ActivityLog& log);
+    void runAnalysis(); 
     void exportAnalysis();
+    void displayHighRisk();
+    void viewExportedReport();
     int  CountProfile = 0;
 
 private:
-RiskProfile profiles[1000];
-int ProfileCount = 0;
-};
+RiskProfile profiles[1000]; //create array (1000) to record 
+int ProfileCount = 0; //count how many learner in array 
 
+void enqueuePriority(RiskProfile p);  //rank risk value, from urgent to not urgent 
+};
 
 #endif
