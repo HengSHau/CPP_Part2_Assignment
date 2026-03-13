@@ -77,8 +77,8 @@ int main() {
         cout<<"3. Remove user from Active Session\n";
         cout<<"4. Display Waitlist & Active Session\n";
         cout<<"5. Start Activity\n";
-        cout<<"6. View All Activity Logs (Task 3)\n"; 
-        cout<<"7. Filter Logs by Student ID (Task 3)\n"; 
+        cout<<"6. View All Activity Logs\n"; 
+        cout<<"7. Filter Logs by Student ID \n"; 
         cout<<"8. Manually Export to CSV\n";
         cout<<"9. Run Risk analysis and show priority\n";
         cout<<"10. Export Risk Report\n";
