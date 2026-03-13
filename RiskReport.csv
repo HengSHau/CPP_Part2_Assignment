@@ -1,0 +1,7 @@
+Rank,LearnerID,RiskScore,Recommendation
+1,TP01002,80.00,Repeat topic and request tutorial support
+2,TP01007,66.67,Repeat the topic and attemp the additional practice
+3,TP01006,53.33,Attempt easier activities for this topic
+4,TP01003,40.00,Attempt easier activities for this topic
+5,TP01005,33.33,All Good. Proceed to next topic.
+6,TP01004,0.00,All Good. Proceed to next topic.

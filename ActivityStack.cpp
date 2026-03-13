@@ -1,4 +1,5 @@
 #include "ActivityStack.hpp"
+#include <string>
 
 // --- ActivityStack 实现 (保持不变) ---
 ActivityStack::ActivityStack() : top(nullptr) {}
