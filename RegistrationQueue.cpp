@@ -3,9 +3,7 @@
 
 using namespace std;
 
-// ==========================================
 // Constructor & Destructor
-// ==========================================
 RegistrationQueue::RegistrationQueue(int capacity) {
     front = nullptr;
     rear = nullptr;
@@ -23,9 +21,7 @@ RegistrationQueue::~RegistrationQueue() {
     }
 }
 
-// ==========================================
 // Limit Checkers
-// ==========================================
 bool RegistrationQueue::isWaitlistEmpty() {
     return front == nullptr;
 }
@@ -38,10 +34,7 @@ bool RegistrationQueue::isActiveSessionFull() {
     return activeCount >= 5; // We set the lab capacity to 5
 }
 
-// ==========================================
 // Core Session Functions
-// ==========================================
-
 // 1. Join waiting line
 void RegistrationQueue::enqueue(Learner l) {
     if (isWaitlistFull()) {
@@ -82,10 +75,9 @@ void RegistrationQueue::admitToSession() {
     if (front == nullptr) {
         rear = nullptr;
     }
-    delete temp; // Free memory!
+    delete temp; 
     currentSize--;
 
-    // 2nd Step: Put them into the Active Session Array
     activeSession[activeCount] = admittedLearner;
     activeCount++;
 
